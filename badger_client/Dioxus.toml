@@ -1,7 +1,7 @@
 [application]
 
 # App (Project) Name
-name = "badger-client"
+name = "badger_client"
 
 # Dioxus App Default Platform
 # desktop, web
@@ -16,7 +16,7 @@ asset_dir = "assets"
 [web.app]
 
 # HTML title tag content
-title = "badger-client"
+title = "badger_client"
 
 [web.watcher]
 
