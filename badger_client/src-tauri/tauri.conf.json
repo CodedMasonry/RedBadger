@@ -1,7 +1,7 @@
 {
   "productName": "badger_client",
   "version": "0.0.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.codedmasonry.com",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
