@@ -10,17 +10,20 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
     "@tauri-apps/api": ">=2.0.0-beta.0",
     "@tauri-apps/plugin-shell": ">=2.0.0-beta.0",
-    "react": "^19.0.0-rc-9d4fba0788-20240530",
-    "react-dom": "^19.0.0-rc-9d4fba0788-20240530"
-  },
-  "overrides": {
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc"
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@tauri-apps/cli": ">=2.0.0-beta.0",
+    "@types/node": "^20.13.0",
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc",
     "@vitejs/plugin-react": "^4.2.1",
