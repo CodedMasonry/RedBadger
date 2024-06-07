@@ -1,18 +1,18 @@
-import "./App.css"
+import "./App.css";
 // import { useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
-import MyButton from "./components/MyButton";
-import { Button } from "@/components/ui/button"
-
+import { ThemeProvider } from "@/components/theme-provider";
+import { ServerSelection } from "./components/server-selection";
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
   return (
-    <div className="p-2">
-      <h1 className="text-xl bold">Welcome to Tauri!</h1>
-      <p>Please hold for testing</p>
-      <Button variant="outline">Button</Button>
-      <MyButton></MyButton>
-    </div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="flex flex-row p-2 space-x-2 border-b-2">
+          <ServerSelection></ServerSelection>
+      </div>
+      <Toaster richColors />
+    </ThemeProvider>
   );
 }
 
