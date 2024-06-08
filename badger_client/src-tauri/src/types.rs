@@ -38,6 +38,8 @@ pub struct Server {
 #[derive(Default)]
 pub struct CurrentServer(Mutex<Option<Server>>);
 
+/// Server configurations are expected to be stored individually per server
+/// Config files are pulled from $APPCONFIG/servers/
 impl ServerList {
     pub fn init(path: PathBuf) -> Self {
         let mut servers = Vec::new();
@@ -82,7 +84,7 @@ impl ServerList {
             list.push(addr);
         }
 
-        return list;
+        list
     }
 }
 

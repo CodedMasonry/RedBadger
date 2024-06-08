@@ -13,7 +13,7 @@ async fn fetch_server_list(servers: State<'_, ServerList>) -> Result<Vec<String>
 #[tauri::command]
 async fn import_server(config: String) -> Result<String, Error> {
     let _config: types::Server = serde_json::from_str(&config)?;
-    return Ok(String::new());
+    Ok(String::new())
 }
 
 fn main() {
