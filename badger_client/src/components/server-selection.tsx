@@ -14,14 +14,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronsUpDown, CirclePlus, Server } from "lucide-react";
+import { ChevronsUpDown, Import, Server } from "lucide-react";
 import NewServerModal from "@/components/new-server";
+import { invoke } from "@tauri-apps/api/core";
 
 type Server = {
   value: string;
   label: string;
 };
 
+/*
 const servers: Server[] = [
   {
     value: "0.0.0.0",
@@ -36,6 +38,23 @@ const servers: Server[] = [
     label: "localhost",
   },
 ];
+*/
+
+const servers: Server[] = await invoke("fetch_server_list")
+  .then((msg) => {
+    const array = msg as String[];
+    if (array.length > 0) {
+      return array.map((x) => ({
+        value: x,
+        label: x,
+      })) as Server[];
+    } else {
+      return [] as Server[];
+    }
+  })
+  .catch(() => {
+    return [] as Server[];
+  });
 
 export function ServerSelection() {
   const [open, setOpen] = React.useState(false);
@@ -83,7 +102,7 @@ function ServerList({
       <CommandInput placeholder="Search Servers..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Local Servers">
+        <CommandGroup heading="Available Servers">
           {servers.map((server) => (
             <CommandItem
               key={server.value}
@@ -103,15 +122,15 @@ function ServerList({
 
         <CommandGroup>
           <CommandItem
-            key="Add Server"
-            value="add server"
+            key="Import Server"
+            value="import server"
             onSelect={(_) => {
               setOpen(false);
               setModelOpen(true);
             }}
           >
-            <CirclePlus className="mr-2"/>
-            Add Server
+            <Import className="mr-2" />
+            Import Server
           </CommandItem>
         </CommandGroup>
       </CommandList>

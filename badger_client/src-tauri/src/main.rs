@@ -1,33 +1,40 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use badger_client::Config;
-use tauri::Manager;
+use badger_client::types::{self, CurrentServer, Error, ServerList};
+use tauri::{Manager, State};
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+/// Never returns error
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+async fn fetch_server_list(servers: State<'_, ServerList>) -> Result<Vec<String>, ()> {
+    Ok(servers.keys().await)
+}
+
+#[tauri::command]
+async fn import_server(config: String) -> Result<String, Error> {
+    let _config: types::Server = serde_json::from_str(&config)?;
+    return Ok(String::new());
 }
 
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
-            std::fs::create_dir_all(folder);
-            let mut file = app
+            let mut folder = app
                 .path()
-                .app_local_data_dir()
+                .app_config_dir()
                 .expect("Failed to resolve local data directory");
-            file.extend("config.json");
-            let config = Config::resolve_from_file(file);
+            folder.push("servers");
 
-            app.manage(config);
+            std::fs::create_dir_all(folder.clone()).expect("Failed to create config folder");
+            let list: ServerList = ServerList::init(folder);
+
+            app.manage(list);
+            app.manage(CurrentServer::default());
 
             Ok(())
         })
-        .plugin(tauri_plugin_stronghold::Builder::new(|pass| todo!()).build())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![fetch_server_list, import_server])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
