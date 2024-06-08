@@ -1,6 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use badger_client::Config;
+use tauri::Manager;
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -9,6 +12,20 @@ fn greet(name: &str) -> String {
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            std::fs::create_dir_all(folder);
+            let mut file = app
+                .path()
+                .app_local_data_dir()
+                .expect("Failed to resolve local data directory");
+            file.extend("config.json");
+            let config = Config::resolve_from_file(file);
+
+            app.manage(config);
+
+            Ok(())
+        })
+        .plugin(tauri_plugin_stronghold::Builder::new(|pass| todo!()).build())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
