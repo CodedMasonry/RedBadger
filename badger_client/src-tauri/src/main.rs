@@ -1,5 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![deny(clippy::all)]
 
 use badger_client::types::{self, CurrentServer, Error, ServerList};
 use tauri::{Manager, State};
