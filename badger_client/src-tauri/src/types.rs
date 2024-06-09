@@ -1,19 +1,20 @@
 use std::{net::IpAddr, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
-use tauri::async_runtime::Mutex;
+use tauri::Manager;
 use tokio::fs;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error(transparent)]
+    #[error("IO failed: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error("Failed to decode json file")]
+    #[error(transparent)]
     Deserialize(#[from] serde_json::Error),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum ServerAddress {
     Ip(IpAddr),
     Dns(String),
@@ -35,8 +36,10 @@ pub struct Server {
     client_key: String,
 }
 
-#[derive(Default)]
-pub struct CurrentServer(Mutex<Option<Server>>);
+#[derive(Clone, serde::Serialize)]
+pub struct EventArray {
+    pub message: Vec<String>,
+}
 
 /// Server configurations are expected to be stored individually per server
 /// Config files are pulled from $APPCONFIG/servers/
@@ -59,7 +62,7 @@ impl ServerList {
         }
     }
 
-    pub async fn update(&mut self) {
+    pub async fn update(&mut self, app: &tauri::AppHandle) {
         self.servers.clear();
 
         for file in self
@@ -72,10 +75,12 @@ impl ServerList {
                 self.servers.push(file);
             }
         }
+
+        self.sync_servers(app);
     }
 
-    pub async fn keys(&self) -> Vec<String> {
-        let mut list = Vec::with_capacity(self.servers.len());
+    pub fn keys(&self) -> Vec<String> {
+        let mut list: Vec<String> = Vec::with_capacity(self.servers.len());
         for server in &self.servers {
             let addr = match &server.addr {
                 ServerAddress::Ip(v) => v.to_string(),
@@ -85,6 +90,12 @@ impl ServerList {
         }
 
         list
+    }
+
+    pub fn sync_servers(&self, app: &tauri::AppHandle) {
+        let keys = self.keys();
+        app.emit("updateServerList", EventArray { message: keys })
+            .unwrap();
     }
 }
 
@@ -109,5 +120,14 @@ impl serde::Serialize for Error {
         S: serde::ser::Serializer,
     {
         serializer.serialize_str(self.to_string().as_ref())
+    }
+}
+
+impl ToString for ServerAddress {
+    fn to_string(&self) -> String {
+        match self {
+            ServerAddress::Ip(v) => v.to_string(),
+            ServerAddress::Dns(v) => v.to_owned(),
+        }
     }
 }

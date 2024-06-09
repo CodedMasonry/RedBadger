@@ -16,45 +16,28 @@ import {
 } from "@/components/ui/popover";
 import { ChevronsUpDown, Import, Server } from "lucide-react";
 import NewServerModal from "@/components/new-server";
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 
 type Server = {
   value: string;
   label: string;
 };
+type eventArray = {
+  message: String[];
+};
 
-/*
-const servers: Server[] = [
-  {
-    value: "0.0.0.0",
-    label: "0.0.0.0",
-  },
-  {
-    value: "192.168.0.1",
-    label: "192.168.0.1",
-  },
-  {
-    value: "localhost",
-    label: "localhost",
-  },
-];
-*/
+// Needs to request th
+var servers: Server[] = await fetchList();
 
-const servers: Server[] = await invoke("fetch_server_list")
-  .then((msg) => {
-    const array = msg as String[];
-    if (array.length > 0) {
-      return array.map((x) => ({
-        value: x,
-        label: x,
-      })) as Server[];
-    } else {
-      return [] as Server[];
-    }
-  })
-  .catch(() => {
-    return [] as Server[];
-  });
+// For handling state updates to server list
+listen("updateServerList", async (event) => {
+  let array = event.payload as eventArray;
+  servers = array.message.map((x) => ({
+    value: x,
+    label: x,
+  })) as Server[];
+});
 
 export function ServerSelection() {
   const [open, setOpen] = React.useState(false);
@@ -136,4 +119,18 @@ function ServerList({
       </CommandList>
     </Command>
   );
+}
+
+function fetchList() {
+  return invoke("get_list")
+    .then((msg) => {
+      let array = msg as String[];
+      return array.map((x) => ({
+        value: x,
+        label: x,
+      })) as Server[];
+    })
+    .catch(() => {
+      return [] as Server[];
+    });
 }

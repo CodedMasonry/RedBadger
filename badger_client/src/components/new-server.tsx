@@ -117,9 +117,10 @@ async function handleSubmit({
   values: z.infer<typeof formSchema>;
 }) {
   setOpen(false);
-  const file = await values.file[0].text();
+  const file = values.file[0] as File;
+  const text = await file.text();
 
-  let result = invoke("import_server", { config: file });
+  let result = invoke("import_server", { fileName: file.name, config: text });
 
   toast.promise(result, {
     loading: "Loading...",
