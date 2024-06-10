@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![deny(clippy::all)]
 
-use badger_client::types::{self, Error, EventArray, ServerList};
+use badger_client::types::{self, Error, ServerList};
 use tauri::{Manager, State};
 use tokio::sync::Mutex;
 
@@ -14,10 +14,14 @@ async fn import_server(
     app: tauri::AppHandle,
 ) -> Result<String, Error> {
     let config: types::Server = serde_json::from_str(&config)?;
+    // Since it is unknown which file the conflict is in, return error instead of prompt
+    if list.lock().await.keys().contains(&config.addr.to_string()) {
+        return Err(Error::AlreadyExists);
+    }
     let mut path: std::path::PathBuf = list.lock().await.cfg_dir.clone();
     path.push(file_name);
 
-    config.save_to_disk(path).await?;
+    config.save_to_disk(path, &app).await?;
     list.lock().await.update(&app).await;
     Ok(config.addr.to_string())
 }
@@ -44,6 +48,7 @@ fn setup<'a>(app: &'a mut tauri::App) -> Result<(), Box<dyn std::error::Error>> 
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .setup(setup)
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![get_list, import_server])

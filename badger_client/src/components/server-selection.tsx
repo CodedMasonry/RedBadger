@@ -19,7 +19,7 @@ import NewServerModal from "@/components/new-server";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 
-type Server = {
+export type Server = {
   value: string;
   label: string;
 };
@@ -28,7 +28,7 @@ type eventArray = {
 };
 
 // Needs to request th
-var servers: Server[] = await fetchList();
+export var servers: Server[] = await fetchList();
 
 // For handling state updates to server list
 listen("updateServerList", async (event) => {
@@ -39,9 +39,14 @@ listen("updateServerList", async (event) => {
   })) as Server[];
 });
 
-export function ServerSelection() {
+export function ServerSelection({
+  modalOpen,
+  setModalOpen,
+}: {
+  modalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
+}) {
   const [open, setOpen] = React.useState(false);
-  const [modalOpen, SetModalOpen] = React.useState(false);
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(
     null
   );
@@ -61,23 +66,23 @@ export function ServerSelection() {
         <PopoverContent className="w-[200px] p-0" align="start">
           <ServerList
             setOpen={setOpen}
-            setModelOpen={SetModalOpen}
+            setModalOpen={setModalOpen}
             setSelectedServer={setSelectedServer}
           />
         </PopoverContent>
       </Popover>
-      <NewServerModal open={modalOpen} setOpen={SetModalOpen} />
+      <NewServerModal open={modalOpen} setOpen={setModalOpen} />
     </>
   );
 }
 
 function ServerList({
   setOpen,
-  setModelOpen,
+  setModalOpen,
   setSelectedServer,
 }: {
   setOpen: (open: boolean) => void;
-  setModelOpen: (modalOpen: boolean) => void;
+  setModalOpen: (modalOpen: boolean) => void;
   setSelectedServer: (Server: Server | null) => void;
 }) {
   return (
@@ -109,7 +114,7 @@ function ServerList({
             value="import server"
             onSelect={(_) => {
               setOpen(false);
-              setModelOpen(true);
+              setModalOpen(true);
             }}
           >
             <Import className="mr-2" />

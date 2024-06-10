@@ -2,6 +2,7 @@ use std::{net::IpAddr, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
+use tauri_plugin_dialog::DialogExt;
 use tokio::fs;
 
 #[derive(Debug, thiserror::Error)]
@@ -11,6 +12,9 @@ pub enum Error {
 
     #[error(transparent)]
     Deserialize(#[from] serde_json::Error),
+
+    #[error("A Config with the same address already exists")]
+    AlreadyExists,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -106,7 +110,21 @@ impl Server {
         Ok(serde_json::from_slice(&data)?)
     }
 
-    pub async fn save_to_disk(&self, path: PathBuf) -> Result<(), Error> {
+    pub async fn save_to_disk(&self, path: PathBuf, app: &tauri::AppHandle) -> Result<(), Error> {
+        // 
+        if fs::try_exists(path.clone()).await? {
+            let is_ok = app.dialog()
+                .message("A config file with a similar name exists, would you like to replace it?")
+                .kind(tauri_plugin_dialog::MessageDialogKind::Error)
+                .title("Badger Client")
+                .ok_button_label("Overwrite")
+                .cancel_button_label("Cancel")
+                .blocking_show();
+            if !is_ok {
+                return Ok(())
+            }
+        }
+
         let json = serde_json::to_vec_pretty(&self)?;
         fs::write(path, json).await?;
         Ok(())
