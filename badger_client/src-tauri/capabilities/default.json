@@ -15,7 +15,6 @@
     "menu:default",
     "tray:default",
     "shell:allow-open",
-    "dialog:default",
     "dialog:default"
   ]
 }

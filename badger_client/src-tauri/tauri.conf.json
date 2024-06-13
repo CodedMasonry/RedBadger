@@ -1,7 +1,7 @@
 {
   "productName": "badger_client",
   "version": "0.0.0",
-  "identifier": "com.codedmasonry.dev",
+  "identifier": "com.tauri.dev",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,8 +12,8 @@
     "windows": [
       {
         "title": "badger_client",
-        "width": 1200,
-        "height": 800
+        "width": 800,
+        "height": 600
       }
     ],
     "security": {
