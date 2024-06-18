@@ -1,36 +1,26 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { createSignal } from "solid-js";
 
-export type Server = {
-  value: string;
-  label: string;
-};
 type eventArray = {
-  message: String[];
+  message: string[];
 };
 
-// Needs to request th
-export var servers: Server[] = await fetchList();
+export const [servers, setServers] = createSignal(await fetchList());
 
 // For handling state updates to server list
 listen("updateServerList", async (event) => {
-    let array = event.payload as eventArray;
-    servers = array.message.map((x) => ({
-      value: x,
-      label: x,
-    })) as Server[];
-  });
+  let array = event.payload as eventArray;
+  setServers(array.message);
+});
 
 function fetchList() {
   return invoke("get_list")
     .then((msg) => {
-      let array = msg as String[];
-      return array.map((x) => ({
-        value: x,
-        label: x,
-      })) as Server[];
+      let array = msg as string[];
+      return array;
     })
     .catch(() => {
-      return [] as Server[];
+      return [];
     });
 }

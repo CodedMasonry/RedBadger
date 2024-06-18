@@ -1,10 +1,17 @@
-import { createSignal } from "solid-js";
+import { ParentProps } from "solid-js";
 import "./App.css";
+import NavBar from "./utils/navbar";
+import { useLocation } from "@solidjs/router";
 
-function App() {
+function App(props: ParentProps) {
   return (
-    <div class="container">
+    <div class="flex">
+      {useLocation().pathname !== "/" ? <NavBar /> : <></>}
+      <div class="w-full">
+        <main>{props.children}</main>
+      </div>
 
+      
     </div>
   );
 }
