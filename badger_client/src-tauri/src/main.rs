@@ -2,26 +2,35 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![deny(clippy::all)]
 
+use std::path::PathBuf;
+
 use badger_client::types::{self, Error, ServerList};
 use tauri::{Manager, State};
-use tokio::sync::Mutex;
+use tokio::{fs, sync::Mutex};
 
 #[tauri::command]
 async fn import_server(
-    file_name: String,
-    config: String,
+    path: String,
     list: State<'_, Mutex<ServerList>>,
     app: tauri::AppHandle,
 ) -> Result<String, Error> {
-    let config: types::Server = serde_json::from_str(&config)?;
+    let path: PathBuf = PathBuf::from(path);
+
+    if path.extension().unwrap_or_default() != "json" {
+        return Err(Error::InvalidFile);
+    }
+
+    let file = fs::read(&path).await?;
+    let config: types::Server = serde_json::from_slice(&file)?;
+
     // Since it is unknown which file the conflict is in, return error instead of prompt
     if list.lock().await.keys().contains(&config.addr.to_string()) {
         return Err(Error::AlreadyExists);
     }
-    let mut path: std::path::PathBuf = list.lock().await.cfg_dir.clone();
-    path.push(file_name);
+    let mut cfg_path: std::path::PathBuf = list.lock().await.cfg_dir.clone();
+    cfg_path.push(path.file_name().unwrap());
 
-    config.save_to_disk(path, &app).await?;
+    config.save_to_disk(cfg_path, &app).await?;
     list.lock().await.update(&app).await;
     Ok(config.addr.to_string())
 }
@@ -29,6 +38,11 @@ async fn import_server(
 #[tauri::command]
 async fn get_list(list: State<'_, Mutex<ServerList>>) -> Result<Vec<String>, ()> {
     Ok(list.lock().await.keys())
+}
+
+#[tauri::command]
+async fn get_cfg_dir(list: State<'_, Mutex<ServerList>>) -> Result<String, ()> {
+    Ok(list.lock().await.cfg_dir.to_string_lossy().to_string())
 }
 
 fn setup<'a>(app: &'a mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
@@ -51,7 +65,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .setup(setup)
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![get_list, import_server])
+        .invoke_handler(tauri::generate_handler![get_list, import_server, get_cfg_dir])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

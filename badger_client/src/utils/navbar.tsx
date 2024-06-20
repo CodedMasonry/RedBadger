@@ -5,22 +5,22 @@ const Tabs = [
   {
     name: "Servers",
     url: "/",
-    icon: <MoveLeft />,
+    icon: <MoveLeft size={20} />,
   },
   {
     name: "Overview",
     url: "/:name",
-    icon: <LayoutDashboard />,
+    icon: <LayoutDashboard size={20} />,
   },
   {
     name: "Sessions",
     url: "/:name/sessions",
-    icon: <Computer />,
+    icon: <Computer size={20} />,
   },
   {
     name: "Server Settings",
     url: "/:name/settings",
-    icon: <Settings />,
+    icon: <Settings size={20} />,
   },
 ];
 

@@ -2,6 +2,7 @@ import { ParentProps } from "solid-js";
 import "./App.css";
 import NavBar from "./utils/navbar";
 import { useLocation } from "@solidjs/router";
+import { Toaster } from "solid-sonner";
 
 function App(props: ParentProps) {
   return (
@@ -11,7 +12,7 @@ function App(props: ParentProps) {
         <main>{props.children}</main>
       </div>
 
-      
+      <Toaster />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 {
   "productName": "badger_client",
   "version": "0.0.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "RedBadger",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "beforeDevCommand": "bun run",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "bun run build",
     "frontendDist": "../dist"

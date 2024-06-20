@@ -15,6 +15,9 @@ pub enum Error {
 
     #[error("A Config with the same address already exists")]
     AlreadyExists,
+
+    #[error("File doesn't exist or is invalid type")]
+    InvalidFile,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
