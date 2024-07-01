@@ -1,18 +1,20 @@
-import { ParentProps } from "solid-js";
+import { ParentProps, Suspense } from "solid-js";
 import "./App.css";
-import NavBar from "./components/navbar";
-import { useLocation } from "@solidjs/router";
+import NavBar from "@/components/navbar";
+import { useLocation, useParams } from "@solidjs/router";
 import { Toaster } from "solid-sonner";
 
 function App(props: ParentProps) {
   return (
     <div class="flex">
-      {useLocation().pathname !== "/" ? <NavBar /> : <></>}
+      {useParams().server ? <NavBar /> : <></>}
       <div class="w-full">
-        <main>{props.children}</main>
+        <main>
+          <Suspense>{props.children}</Suspense>
+        </main>
       </div>
 
-      <Toaster />
+      <Toaster richColors />
     </div>
   );
 }

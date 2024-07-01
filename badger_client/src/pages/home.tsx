@@ -1,10 +1,11 @@
 import { Import, Settings } from "lucide-solid";
-import { servers } from "../components/servers";
+import { servers } from "@/components/servers";
 import { For } from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "solid-sonner";
-import { useNavigate } from "@solidjs/router";
+import { A } from "@solidjs/router";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 async function handleImport() {
   console.log("clicked");
@@ -34,23 +35,22 @@ export default function Home() {
         <div class="top-1/2 left-1/2 fixed -translate-x-1/2 -translate-y-1/2">
           <h1 class="text-2xl font-bold">No servers were found</h1>
           <p>We couldn't find any servers in the config directory</p>
-          <button class="btn btn-primary mt-4" onClick={handleImport}>
-            <Import />
+          <Button variant="default" class="mt-4" onClick={handleImport}>
+            <Import class="mr-2" />
             Import Server
-          </button>
+          </Button>
         </div>
       )}
 
-      <button
-        class="btn btn-primary btn-sm absolute bottom-4 left-4"
-        onClick={() => {
-          const navigate = useNavigate();
-          navigate("/settings");
-        }}
+      <A
+        class={`${buttonVariants({
+          variant: "outline",
+        })} absolute bottom-4 left-4`}
+        href="/settings"
       >
-        <Settings size={20} />
+        <Settings size={20} class="mr-1" />
         Global Settings
-      </button>
+      </A>
     </div>
   );
 }

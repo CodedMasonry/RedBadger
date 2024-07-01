@@ -4,6 +4,7 @@ import App from "./App";
 import { Route, Router } from "@solidjs/router";
 import Home from "./pages/home";
 import Settings from "./pages/settings"
+import NotFound from "./pages/notfound";
 
 render(
   () => <Router root={App}>
@@ -12,6 +13,7 @@ render(
     <Route path="/:server" component={Home} />
     <Route path="/:server/sessions" component={Home} />
     <Route path="/:server/settings" component={Home} />
+    <Route path="*404" component={NotFound} />
   </Router>,
   document.getElementById("root") as HTMLElement
 );
