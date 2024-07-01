@@ -1,6 +1,6 @@
 import { ParentProps } from "solid-js";
 import "./App.css";
-import NavBar from "./utils/navbar";
+import NavBar from "./components/navbar";
 import { useLocation } from "@solidjs/router";
 import { Toaster } from "solid-sonner";
 

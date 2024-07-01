@@ -1,5 +1,5 @@
 import { Import, Settings } from "lucide-solid";
-import { servers } from "../utils/servers";
+import { servers } from "../components/servers";
 import { For } from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
