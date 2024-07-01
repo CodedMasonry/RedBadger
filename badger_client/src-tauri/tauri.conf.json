@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "identifier": "RedBadger",
   "build": {
-    "beforeDevCommand": "bun run",
+    "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "bun run build",
     "frontendDist": "../dist"
@@ -30,5 +30,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  }
+  },
+  "plugins": {}
 }
